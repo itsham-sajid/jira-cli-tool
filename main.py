@@ -1,7 +1,6 @@
 
 import typer
 import os
-import json
 import rss_feed_search
 import jira_issue_creator
 import jira_template_format
@@ -25,6 +24,8 @@ def create_tickets(
 
     get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
+    print(get_rssfeed_data)
+
     templatefile = "eks_release_template.json"
 
     requested_entries = {}
@@ -42,9 +43,11 @@ def create_tickets(
     
     placeholders = placeholders.split(",")
 
-    jira_format_task = jira_template_format.update_dict(requested_entries, placeholders, templatefile)
+    jira_format_task = jira_template_format.update_dict(requested_entries, templatefile, values, placeholders)
 
-    # jira_issue_creator.send_payload(jira_api_url, jira_api_auth, jira_format_task)
+    print(jira_format_task)
+
+    jira_issue_creator.send_payload(jira_api_url, jira_api_auth, jira_format_task)
 
 
 

@@ -32,7 +32,7 @@ def api_connection_test(api_url, auth_headers):
         if response.status_code == 200:
             return response.status_code
         else:
-            print("Failed to connect to Jira API. Status code: {}".format(response.status_code))
+            print("ERROR - Failed to connect to Jira API. Status code: {}".format(response.status_code))
             return response.status_code
 
     except Exception as e:

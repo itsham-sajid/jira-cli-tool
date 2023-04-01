@@ -94,7 +94,7 @@
                        },
                        {
                           "type": "text",
-                          "text": "titles-placeholder"
+                          "text": "title-placeholder"
                        }
                     ]
                  },
@@ -151,7 +151,7 @@
                     "content": [
                        {
                           "type": "text",
-                          "text": "EKS Maintenance and Scheduling: "
+                          "text": "EKS Maintenance and Scheduling"
                        },
                        {
                         "type": "inlineCard",
@@ -167,7 +167,7 @@
                     "content": [
                        {
                           "type": "text",
-                          "text": "EKS Upgrade Process: "
+                          "text": "EKS Upgrade Process:"
                        },
                        {
                         "type": "inlineCard",
