@@ -8,7 +8,6 @@ import jira_template_format
 
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
-
 @app.command(short_help=
         'Command requires all positional arguements to search for rss feed, updates Jira template and creates ticket\n')
 def create_tickets(
@@ -26,8 +25,6 @@ def create_tickets(
     values = [v.strip() for v in values.split(",")]
     placeholders = placeholders.split(",")
 
-
-
     get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
     requested_entries = {}
@@ -44,8 +41,6 @@ def create_tickets(
     jira_format_task = jira_template_format.update_dict(requested_entries, templatefile, values, placeholders)
     jira_issue_creator.send_payload(jira_api_url, jira_api_auth, jira_format_task)
 
-
-
 @app.command(short_help="Command searches RSS feed with given search terms and outputs the results to a file")
 def search_feed(
         rssfeed: str = typer.Option(..., "--rssfeed", "-r", help="The RSS feed URL", prompt=True),
@@ -57,9 +52,6 @@ def search_feed(
     
     get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
-    
-
-
 @app.callback()
 def main():
     """
@@ -69,16 +61,9 @@ def main():
 
     """
 
-
-
 if __name__ == "__main__":
 
     try:
-
-        """
-        Program description.
-        """
-    
 
         jira_api_token = os.environ.get('JIRA_API_TOKEN')
         jira_username = os.environ.get('JIRA_USERNAME')
