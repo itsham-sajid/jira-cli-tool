@@ -5,8 +5,6 @@ import pytz
 
 
 def start_search_feed(keywords, rss_feed, days):
-
-    try:
         
         matched_entries = {}
         matched_entry_counter = 0
@@ -31,7 +29,8 @@ def start_search_feed(keywords, rss_feed, days):
                 if keyword in entry.title:
                     matched_entry_counter += 1
                     matched_entries[f"Entry {matched_entry_counter}"] = {
-                        'published': entry.published,
+                        'id': str(matched_entry_counter),
+                        'published': entry.published[:-9],
                         'title': entry.title,
                         'link': entry.link,
                         
@@ -44,13 +43,11 @@ def start_search_feed(keywords, rss_feed, days):
     
     
         for entry_num, entry in matched_entries.items():
-            print(f"\nEntry {entry_num}:")
+            print(f"\n{entry_num}:")
+            print(f"id: {entry['id']}:")
             print(f"title: {entry['title']}")
             print(f"link: {entry['link']}")
             print(f"published: {entry['published']}\n")
 
         return matched_entries
         
-    
-    except Exception as e:
-        print(f"\nERROR - An error occurred in search_feed(): \n{e}")

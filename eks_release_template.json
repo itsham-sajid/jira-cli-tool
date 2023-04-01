@@ -86,6 +86,32 @@
                     ]
                  },
                  {
+                  "type": "paragraph",
+                  "content": [
+                     {
+                        "type": "text",
+                        "text": "Entry: "
+                     },
+                     {
+                        "type": "text",
+                        "text": "id-placeholder"
+                     }
+                  ]
+               },
+               {
+                  "type": "paragraph",
+                  "content": [
+                     {
+                        "type": "text",
+                        "text": "Published: "
+                     },
+                     {
+                        "type": "text",
+                        "text": "published-placeholder"
+                     }
+                  ]
+               },
+                 {
                     "type": "paragraph",
                     "content": [
                        {
@@ -94,7 +120,7 @@
                        },
                        {
                           "type": "text",
-                          "text": "titles-placeholder"
+                          "text": "title-placeholder"
                        }
                     ]
                  },

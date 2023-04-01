@@ -86,6 +86,19 @@
                     ]
                  },
                  {
+                  "type": "paragraph",
+                  "content": [
+                     {
+                        "type": "text",
+                        "text": "Entry: "
+                     },
+                     {
+                        "type": "text",
+                        "text": "id-placeholder"
+                     }
+                  ]
+               },
+                 {
                     "type": "paragraph",
                     "content": [
                        {

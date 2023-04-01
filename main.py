@@ -16,22 +16,21 @@ def create_tickets(
         keywords: str = typer.Option(..., "--keywords", "-k", help="List of search terms", prompt=True),
         days: int = typer.Option(..., "--days", "-d", help="Number of days to search back", prompt=True),
         values: str = typer.Option(..., "--values", "-v", help="Number of days to search back", prompt=True),
+        templatefile: str = typer.Option(..., "--templatefile", "-t", help="JIRA Template file", prompt=True),
         placeholders: str = typer.Option(..., "--placeholders", "-p", help="Number of days to search back", prompt=True)
+
         ):
     
     
     keywords = keywords.split(",")
+    values = [v.strip() for v in values.split(",")]
+    placeholders = placeholders.split(",")
+
+
 
     get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
-    print(get_rssfeed_data)
-
-    templatefile = "eks_release_template.json"
-
     requested_entries = {}
-
-
-    values = [v.strip() for v in values.split(",")]
 
     for entry_num, entry in get_rssfeed_data.items():
         requested_entries[entry_num] = {}
@@ -40,21 +39,21 @@ def create_tickets(
                 requested_entries[entry_num][value] = entry[value]
             else:
                 print(f"No value found for {value}")
-    
-    placeholders = placeholders.split(",")
+
 
     jira_format_task = jira_template_format.update_dict(requested_entries, templatefile, values, placeholders)
-
-    print(jira_format_task)
-
     jira_issue_creator.send_payload(jira_api_url, jira_api_auth, jira_format_task)
 
 
 
 @app.command(short_help="Command searches RSS feed with given search terms and outputs the results to a file")
-def search_feed():
-    print("Hello")
-
+def search_feed(
+        rssfeed: str = typer.Option(..., "--rssfeed", "-r", help="The RSS feed URL", prompt=True),
+        keywords: str = typer.Option(..., "--keywords", "-k", help="List of search terms", prompt=True),
+        days: int = typer.Option(..., "--days", "-d", help="Number of days to search back", prompt=True)
+        ):
+    
+    get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
 
 if __name__ == "__main__":
