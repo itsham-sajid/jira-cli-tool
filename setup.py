@@ -5,9 +5,8 @@ setup(
     version='1.0',
     packages=find_packages(),
     install_requires=open('requirements.txt').readlines(),
-    entry_points={
-        'console_scripts': [
-            'feed2ticket=main:main',
-        ],
-    },
+    entry_points='''
+    [console_scripts]
+    feed2ticket=feed2ticket.main:main
+    '''
 )

@@ -1,9 +1,9 @@
 
 import typer
 import os
-import rss_feed_search
-import jira_issue_creator
-import jira_template_format
+from feed2ticket import rss_feed_search
+from feed2ticket import jira_issue_creator
+from feed2ticket import jira_template_format
 
 
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -52,7 +52,7 @@ def search_feed(
     
     get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
-@app.callback()
+@app.command()
 def main():
     """
     Feed2Ticket
@@ -60,18 +60,17 @@ def main():
     Purpose: This program allows you to create Jira tickets based on matching entries from an RSS feed.
 
     """
+    jira_api_token = os.environ.get('JIRA_API_TOKEN')
+    jira_username = os.environ.get('JIRA_USERNAME')
+    jira_api_url = "https://itsham-sajid.atlassian.net/rest/api/3"
+
+    jira_api_auth = jira_issue_creator.jira_api(jira_username, jira_api_token)
+    jira_issue_creator.api_connection_test(jira_api_url, jira_api_auth)
+
 
 if __name__ == "__main__":
 
     try:
-
-        jira_api_token = os.environ.get('JIRA_API_TOKEN')
-        jira_username = os.environ.get('JIRA_USERNAME')
-        jira_api_url = "https://itsham-sajid.atlassian.net/rest/api/3"
-
-        jira_api_auth = jira_issue_creator.jira_api(jira_username, jira_api_token)
-        jira_issue_creator.api_connection_test(jira_api_url, jira_api_auth)
-
         app()
 
 
