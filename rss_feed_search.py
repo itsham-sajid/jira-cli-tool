@@ -30,7 +30,7 @@ def start_search_feed(keywords, rss_feed, days):
                     matched_entry_counter += 1
                     matched_entries[f"Entry {matched_entry_counter}"] = {
                         'id': str(matched_entry_counter),
-                        'published': entry.published[:-9],
+                        'published': entry.published[:-7],
                         'title': entry.title,
                         'link': entry.link,
                         

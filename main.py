@@ -6,11 +6,11 @@ import jira_issue_creator
 import jira_template_format
 
 
-app = typer.Typer()
+app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
 
-
-@app.command(short_help='Command requires all positional arguements to search for rss feed, updates Jira template and creates ticket')
+@app.command(short_help=
+        'Command requires all positional arguements to search for rss feed, updates Jira template and creates ticket\n')
 def create_tickets(
         rssfeed: str = typer.Option(..., "--rssfeed", "-r", help="The RSS feed URL", prompt=True),
         keywords: str = typer.Option(..., "--keywords", "-k", help="List of search terms", prompt=True),
@@ -53,12 +53,32 @@ def search_feed(
         days: int = typer.Option(..., "--days", "-d", help="Number of days to search back", prompt=True)
         ):
     
+    keywords = keywords.split(",")
+    
     get_rssfeed_data = rss_feed_search.start_search_feed(keywords, rssfeed, days)
+
+    
+
+
+@app.callback()
+def main():
+    """
+    Feed2Ticket
+
+    Purpose: This program allows you to create Jira tickets based on matching entries from an RSS feed.
+
+    """
+
 
 
 if __name__ == "__main__":
 
     try:
+
+        """
+        Program description.
+        """
+    
 
         jira_api_token = os.environ.get('JIRA_API_TOKEN')
         jira_username = os.environ.get('JIRA_USERNAME')
