@@ -1,0 +1,32 @@
+{
+    "Entry 1": {
+        "id": "1",
+        "published": "Thu, 30 Mar 2023 17:13:0",
+        "title": "AWS Batch now supports user-defined pod labels on Amazon EKS",
+        "link": "https://aws.amazon.com/about-aws/whats-new/2023/03/aws-batch-user-defined-pod-labels-amazon-eks/"
+    },
+    "Entry 2": {
+        "id": "2",
+        "published": "Thu, 30 Mar 2023 22:09:4",
+        "title": "Amazon GuardDuty now monitors runtime activity from containers running on Amazon EKS",
+        "link": "https://aws.amazon.com/about-aws/whats-new/2023/03/amazon-guardduty-monitors-runtime-activity-containers-eks/"
+    },
+    "Entry 3": {
+        "id": "3",
+        "published": "Mon, 27 Mar 2023 21:50:3",
+        "title": "Amazon EKS adds domainless gMSA authentication for Windows containers",
+        "link": "https://aws.amazon.com/about-aws/whats-new/2023/03/amazon-eks-domainless-gmsa-authentication-windows-containers/"
+    },
+    "Entry 4": {
+        "id": "4",
+        "published": "Fri, 24 Mar 2023 20:03:3",
+        "title": "Amazon EMR on EKS adds support for JEG pod placement for managed endpoints",
+        "link": "https://aws.amazon.com/about-aws/whats-new/2023/03/amazon-emr-eks-jeg-pod-placement-managed-endpoints/"
+    },
+    "Entry 5": {
+        "id": "5",
+        "published": "Fri, 24 Mar 2023 20:25:3",
+        "title": "Amazon EMR on EKS adds managed and self-managed node groups support for managed endpoints",
+        "link": "https://aws.amazon.com/about-aws/whats-new/2023/03/amazon-emr-eks-managed-node-groups-endpoints/"
+    }
+}

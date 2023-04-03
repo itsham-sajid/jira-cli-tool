@@ -41,7 +41,7 @@ def start_search_feed(keywords, rss_feed, days):
                     }
                     break
 
-        filename = f'{matched_entry_counter} {keyword} entries.json'
+        filename = f'{matched_entry_counter}-{keyword}-entries.json'
 
         if keyword_found:
             with open(filename, 'w') as f:
