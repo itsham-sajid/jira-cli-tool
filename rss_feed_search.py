@@ -1,6 +1,6 @@
-
 from datetime import datetime, timedelta, timezone
 import feedparser
+import json
 import pytz
 
 
@@ -8,6 +8,9 @@ def start_search_feed(keywords, rss_feed, days):
         
         matched_entries = {}
         matched_entry_counter = 0
+        keyword_found = False  # Initialize keyword_found flag
+
+    
         
         current_date = datetime.now(timezone.utc)
         one_month_ago = current_date - timedelta(days=days)
@@ -27,6 +30,7 @@ def start_search_feed(keywords, rss_feed, days):
 
             for keyword in keywords:
                 if keyword in entry.title:
+                    keyword_found = True 
                     matched_entry_counter += 1
                     matched_entries[f"Entry {matched_entry_counter}"] = {
                         'id': str(matched_entry_counter),
@@ -36,18 +40,14 @@ def start_search_feed(keywords, rss_feed, days):
                         
                     }
                     break
-        
-        not_found_keywords = set(keywords) - set([keyword for keyword in keywords for entry in feed.entries if keyword in entry.title])
-        for keyword in not_found_keywords:
-            print(f"No entries found for keyword: {keyword}\n")
-    
-    
-        for entry_num, entry in matched_entries.items():
-            print(f"\n{entry_num}:")
-            print(f"id: {entry['id']}:")
-            print(f"title: {entry['title']}")
-            print(f"link: {entry['link']}")
-            print(f"published: {entry['published']}\n")
 
-        return matched_entries
+        filename = f'{matched_entry_counter} {keyword} entries.json'
+
+        if keyword_found:
+            with open(filename, 'w') as f:
+                json.dump(matched_entries, f, indent=4)
+                print(f"Matches entries saved to: {filename}")
+        else:
+            print(f"No entries found for any of the keywords {keywords} within the date range.")
+    
         
