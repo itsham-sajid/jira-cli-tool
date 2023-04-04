@@ -1,4 +1,3 @@
-
 import typer
 import jira_issue_creator
 import jira_template_format
@@ -99,8 +98,6 @@ def create_tickets(
         
         jira_format_task = jira_template_format.read_json_data_file(jsondata, templatefile, values, placeholders)
         jira_issue_creator.send_payload(env_var_values['JIRA_API_URL'], auth_headers, jira_format_task)
-   
-
 
 @log_exception
 def check_env_vars(env_vars):

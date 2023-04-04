@@ -42,6 +42,8 @@ def api_connection_test(api_url, auth_headers):
 @log_exception
 def send_payload(api_url, api_headers, data):
 
+    ticket_counter = 0
+
     for item in data:
         issue = item
         
@@ -50,8 +52,11 @@ def send_payload(api_url, api_headers, data):
         if response.status_code == 201:
             create_msg = response.text
             logger.info(f"- Ticket created: {create_msg}")
+            ticket_counter += 1
         else:
             error_msg = response.text
             logger.error(f"- Failed to send payload: {response.status_code}")
             logger.error(f"- Error message: {error_msg}")
+            
+    logger.info(f"- Total tickets created: {ticket_counter}")        
     return response.status_code

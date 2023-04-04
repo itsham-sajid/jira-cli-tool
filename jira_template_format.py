@@ -1,10 +1,5 @@
 import json
-from main import log_exception
-import logging
 
-logger = logging.getLogger(__name__)
-
-@log_exception
 def read_json_data_file(json_data, jira_template, req_values, template_placeholders):
 
     with open(json_data, 'r') as f:
@@ -21,7 +16,6 @@ def read_json_data_file(json_data, jira_template, req_values, template_placehold
 
     return new_templates
 
-@log_exception
 def update_template_placeholders(template, placeholders, requested_values):
 
     if isinstance(template, dict):
