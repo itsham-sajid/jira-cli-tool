@@ -57,7 +57,8 @@ Install the required packages:
 
 The tool has two main commands **search-feed** and **create-ticket**
 
-#### search-feed - Command searches for given RSS feed with supplied keywords and outputs all matches entries to a JSON file.  
+#### search-feed
+The command searches for given RSS feed with supplied keywords and outputs all matches entries to a JSON file.  
 
 **Required arguments:**
 
@@ -69,24 +70,53 @@ The tool has two main commands **search-feed** and **create-ticket**
 
         python3 main.py search-feed \
         --rssfeed="https://aws.amazon.com/about-aws/whats-new/recent/feed/?&rss" \
-        --keywords="Direct Connect" \
+        --keywords="Direct Connect" \ #multiple keyowrds can be declared with spaces e.g. --keywords=AWS,EKS
         --days=30
 
-**Output:**
+**Output: Saved to a file named '2-CodeBuild-entries.json'
+
+        {
+            "Entry 1": {
+                "id": "1",
+                "published": "Tue, 04 Apr 2023 21:48:5",
+                "title": "AWS CodeBuild is now available in three additional AWS Regions",
+                "link": "https://aws.amazon.com/about-aws/whats-new/2023/04/aws-codebuild-three-additional-regions/"
+            },
+            "Entry 2": {
+                "id": "2",
+                "published": "Tue, 28 Mar 2023 19:07:3",
+                "title": "AWS CodeBuild supports Arm-based workloads in five additional AWS Regions",
+                "link": "https://aws.amazon.com/about-aws/whats-new/2023/03/aws-codebuild-arm-based-workloads-additional-regions/"
+            }
+        }
 
 
 
+#### create-tickets
 
-**create-tickets**
+How this commands works is it will first take your JSDON data file, you declare all the values you want to obtain your JSON file for your Jira ticket, provide your Jira template file which has 'placeholders' to where you want your values to be placed.
 
+The command will format the Jira ADF template replacing all values and a seperate Jira ticket is raised for each entry in your JSON file. So, for the '2-CodeBuild-entries.json' file 2 tickets will be created.
 
-main.py \
-    create-tickets \
-    --rssfeed="https://aws.amazon.com/about-aws/whats-new/recent/feed/?&rss" \
-    --keywords=EKS \
-    --days=7 \
-    --values=title,link \
-    --placeholders=titles-placeholder,link-placeholder
+The reason for using the Jira ADF template is because it's the only format their API accepts for rich text features. Hence, the reason for adding 'placeholders' and pulling values from your JSON data file their replaced with
+
+**Required arguments:**
+
+* --jsondata  - A JSON file with data for your ticket. Note: Seperate tickets are created for each item in your JSON file.
+* --values - Declare values from the JSON file, this is being used to match with the 'placeholders' in the 'templatefile'
+* --templatefile - The Jira ADF template file, sample template within 'templates/eks_release_template.json'
+* --placeholders - Declare the 'placeholders'. This is where the 'values' your from 'jsondata' will go
+
+**Example:** 
+
+        python3 main.py create-tickets \
+        --jsondata=2-CodeBuild-entries.json \
+        --values=title,link" \ #multiple keyowrds can be declared with spaces e.g.
+        --templatefile=eks_release_template.json \
+        --placeholders=entries-placeholder,link-placeholder
+
+Output:
+
 
 
 
