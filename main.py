@@ -12,13 +12,7 @@ import rss_feed_search
 from functools import wraps
 
 
-
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
-
-env_api_token = 'JIRA_API_TOKEN'
-env_username = 'JIRA_USERNAME'
-env_api_url = 'JIRA_API_URL'
-
 
 def create_logger() -> str:
     """Create Logger function to setups logger for this file."""
@@ -29,7 +23,7 @@ def create_logger() -> str:
     logging_filename = logfile_name
     logging_level = logging.INFO
     # Logging Configuration
-    log_format = "[%(asctime)s] %(levelname) - 8s %(name) -12s %(message)s"
+    log_format = "[%(asctime)s] - %(levelname) - 8s %(name) - -12s %(message)s"
     logging.basicConfig(
         level=logging_level,
         format=log_format,
@@ -82,15 +76,21 @@ def create_tickets(
     placeholders = placeholders.split(",")
     #ensure all the checks are completed 
 
-    jira_api_vars = check_env_vars_exist(env_api_token, env_username, env_api_url)
+    jira_api_vars = check_env_vars_exist()
 
     logger.info(f"Checking {jsondata} contains requested values: {values}")
     check_jsonfile_values = check_json(jsondata, values)
 
     logger.info(f"Checking {templatefile} contains specified placeholders: {placeholders}")
-    check_template_values = check_json(jsondata, placeholders)
+    check_template_values = template_json(templatefile, placeholders)
+
+    #test jira connection
+
+    api_auth_headers = jira_issue_creator.jira_api(jira_api_vars['JIRA_USERNAME'], jira_api_vars['JIRA_API_TOKEN'])
     
-    
+
+
+
 
     # print(check_req_arguments)
 
@@ -112,26 +112,25 @@ def create_tickets(
     # else:
     #     print("NO")
 
-@log_exception
-def jira_connection(username, api_token):
-        
-        api_auth_headers = jira_issue_creator.jira_api(username, api_token)
-
-        test_connection = jira_issue_creator.api_connection_test(jira_api_url, api_auth_headers)
-
-        print(test_connection)
-
 
 @log_exception
-def check_env_vars_exist(*args: str) -> bool:
-    for arg in args:
-        if not os.environ.get(arg):
-            logger.error(f"{arg} environment variable is not set.")
+def check_env_vars_exist():
+
+    env_vars = ['JIRA_API_TOKEN', 'JIRA_USERNAME', 'JIRA_API_URL']
+
+    env_var_values = {}
+
+    for vars in env_vars:
+        if not os.environ.get(vars):
+            logger.error(f"{vars} environment variable is not set.")
             return False
-    return True
+        else:
+            env_var_values[vars] = os.environ[vars]
 
+    logger.info(f"All environment variables {env_vars} found.")
+    return env_var_values
 
-
+@log_exception
 def check_json(jsondata, values):
 
     file_checks_passed = False
@@ -145,12 +144,34 @@ def check_json(jsondata, values):
         file_type = True
         for key, value in data.items():
             if not all(item in value for item in values):
-                logger.error(f"Not all search values exist.\nPlease check JSON objects in '{jsondata}' to make sure values {values} exist")
+                logger.error(f"Not all search values exist.\nPlease check {values} exist in '{jsondata}'")
                 file_checks_passed = False
                 break
         else:
             logger.info(f"All requested values {values} exist in '{jsondata}'")
             file_checks_passed = True
+
+    return file_checks_passed
+
+@log_exception
+def template_json(template_file, search_placeholders):
+    file_checks_passed = False
+
+    with open(template_file, "r") as f:
+        data = json.load(f)
+
+    if not template_file.endswith('.json'):
+        raise ValueError('Error: JSON file required')
+    else:
+        file_type = True
+        for key, value in data.items():
+            if any(search_term in str(value) for search_term in search_placeholders):
+                logger.info(f"Found placeholders: {search_placeholders} in JSON file '{template_file}'")
+                file_checks_passed = True
+                break
+        else:
+            logger.error(f"Not all placeholder values exist. Please check {search_placeholders} exist in '{template_file}'")
+            file_checks_passed = False
 
     return file_checks_passed
 
@@ -162,7 +183,6 @@ def main():
     Feed2Ticket
     Purpose: This program allows you to create Jira tickets based on matching entries from an RSS feed.
     """
-
 
 
 
