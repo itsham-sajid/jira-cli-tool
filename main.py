@@ -1,52 +1,13 @@
-import typer
 import jira_issue_creator
 import jira_template_format
-import logging
-import os
-import sys
 import json
-import traceback
-from typing import Callable
+from logs import logger, log_exception
+import os
 import rss_feed_search
-from functools import wraps
+import typer
 
 
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
-
-
-def create_logger() -> str:
-    """Create Logger function to setups logger for this file."""
-    # Logging variables
-    logger_name = "ticket_feeder_logger"
-    script_name_bare = os.path.splitext(sys.argv[0])[0].replace("./", "")
-    logfile_name = script_name_bare + ".log"
-    logging_filename = logfile_name
-    logging_level = logging.INFO
-    # Logging Configuration
-    log_format = "[%(asctime)s] - %(levelname) - 8s %(name) - -12s %(message)s"
-    logging.basicConfig(
-        level=logging_level,
-        format=log_format,
-        handlers=[logging.StreamHandler(), logging.FileHandler(logging_filename)],
-    )
-    return logger_name
-
-logger = logging.getLogger(create_logger())
-
-
-def log_exception(func: Callable):
-    """Logging declarator to ensure any exceptions seen are logged."""
-
-    @wraps(func)
-    def exception_wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            logger.error(f"There was a problem in {func.__name__}:\n{str(e)}")
-            logger.error(traceback.format_exc())
-            raise Exception(traceback.format_exc())
-
-    return exception_wrapper
 
 
 @log_exception
@@ -61,7 +22,6 @@ def search_feed(
     
     rss_feed_search.start_search_feed(keywords, rssfeed, days)
 
-
 @log_exception
 @app.command(short_help=
         'Command requires all positional arguements to search for rss feed, updates Jira template and creates ticket\n')
@@ -72,6 +32,7 @@ def create_tickets(
         placeholders: str = typer.Option(..., "--placeholders", "-p", help="Number of days to search back", prompt=True)
         ):
     
+    logger.info("-" * 50)
     env_vars = ['JIRA_API_TOKEN', 'JIRA_USERNAME', 'JIRA_API_URL']
 
     values = [v.strip() for v in values.split(",")]
@@ -82,22 +43,27 @@ def create_tickets(
 
         env_var_values = {var: os.environ.get(var) for var in env_vars}
         auth_headers = jira_issue_creator.jira_api(env_var_values['JIRA_USERNAME'], env_var_values['JIRA_API_TOKEN'])
+        logger.info("-" * 50)
         api_connect_test = jira_issue_creator.api_connection_test(env_var_values['JIRA_API_URL'], auth_headers)
+        logger.info("-" * 50)
 
 
     if api_connect_test == True:
 
-        logger.info(f"- Checking {jsondata} contains requested values: {values}")
+        logger.info(f"- Checking '{jsondata}' contains requested values: {values}")
         check_jsonfile_values = check_json(jsondata, values)
 
-        logger.info(f"- Checking {templatefile} contains specified placeholders: {placeholders}")
+        logger.info(f"- Checking '{templatefile}' contains specified placeholders: {placeholders}")
         check_template_values = template_json(templatefile, placeholders)
+        
 
 
     if check_template_values and check_jsonfile_values == True:
         
         jira_format_task = jira_template_format.read_json_data_file(jsondata, templatefile, values, placeholders)
+        logger.info("-" * 50)
         jira_issue_creator.send_payload(env_var_values['JIRA_API_URL'], auth_headers, jira_format_task)
+        logger.info("-" * 50)
 
 @log_exception
 def check_env_vars(env_vars):
@@ -159,7 +125,6 @@ def template_json(template_file, search_placeholders):
             file_checks_passed = False
 
     return file_checks_passed
-
 
 
 @app.callback()

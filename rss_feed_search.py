@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta, timezone
+from logs import logger, log_exception
 import feedparser
 import json
 import pytz
 
 
+@log_exception
 def start_search_feed(keywords, rss_feed, days):
         
     matched_entries = {}
@@ -44,8 +46,6 @@ def start_search_feed(keywords, rss_feed, days):
     if keyword_found:
         with open(filename, 'w') as f:
             json.dump(matched_entries, f, indent=4)
-            print(f"Matches entries saved to: {filename}")
+            logger.info(f"- Found matching entries. Entries saved to file in current directory: {filename}")
     else:
-        print(f"No entries found for any of the keywords {keywords} within the date range.")
-
-    
+        logger.info(f"No entries found for any of the keywords {keywords} within the date range.")
