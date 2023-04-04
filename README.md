@@ -115,9 +115,39 @@ The reason for using the Jira ADF template is because it's the only format their
         --templatefile=eks_release_template.json \
         --placeholders=entries-placeholder,link-placeholder
 
-Output:
+**Output:**
+
+From the above example, below is the expected result. 
+**Two tickets are created within Jira:**
+![image](https://user-images.githubusercontent.com/99727892/229946288-0eb1e161-1992-4316-832d-37c11c85005e.png)
 
 
+**Task Details:**
+![image](https://user-images.githubusercontent.com/99727892/229946579-3581eaac-18a3-43d7-ab5a-4d85d3b48c4f.png)
+                                                                                                                                        
+## Logging
 
+The logging module contains the 
+
+Below is the logging output for the creation of a ticket if all required arguments are met and have passed:
+
+        [2023-04-05 00:43:19,701] - INFO     ticket_feeder_logger --------------------------------------------------
+        [2023-04-05 00:43:19,701] - INFO     ticket_feeder_logger - JIRA_API_TOKEN Found in environment variables.
+        [2023-04-05 00:43:19,701] - INFO     ticket_feeder_logger - JIRA_USERNAME Found in environment variables.
+        [2023-04-05 00:43:19,715] - INFO     ticket_feeder_logger - JIRA_API_URL Found in environment variables.
+        [2023-04-05 00:43:19,715] - INFO     ticket_feeder_logger --------------------------------------------------
+        [2023-04-05 00:43:19,933] - INFO     jira_issue_creator - API Response Status Code: 200
+        [2023-04-05 00:43:19,933] - INFO     jira_issue_creator - Authenticated with user: itshams@googlemail.com
+        [2023-04-05 00:43:19,933] - INFO     ticket_feeder_logger --------------------------------------------------
+        [2023-04-05 00:43:19,948] - INFO     ticket_feeder_logger - Checking '2-CodeBuild-entries.json' contains requested values: ['title', 'link']
+        [2023-04-05 00:43:19,948] - INFO     ticket_feeder_logger - All requested values ['title', 'link'] exist in '2-CodeBuild-entries.json'
+        [2023-04-05 00:43:19,950] - INFO     ticket_feeder_logger - Checking 'templates/eks_release_template.json' contains specified placeholders: ['entries-placeholder', 'link-placeholder']
+        [2023-04-05 00:43:19,950] - INFO     ticket_feeder_logger - Found placeholders: ['entries-placeholder', 'link-placeholder'] in JSON file 'templates/eks_release_template.json'   
+        [2023-04-05 00:43:19,951] - INFO     ticket_feeder_logger - Updating template 'templates/eks_release_template.json'. Replacing ['entries-placeholder', 'link-placeholder'] with ['title', 'link']
+        [2023-04-05 00:43:19,952] - INFO     ticket_feeder_logger --------------------------------------------------
+        [2023-04-05 00:43:20,983] - INFO     jira_issue_creator - Ticket created: {"id":"10297","key":"ISS-290","self":"https://itsham-sajid.atlassian.net/rest/api/3/issue/10297"}
+        [2023-04-05 00:43:21,901] - INFO     jira_issue_creator - Ticket created: {"id":"10298","key":"ISS-291","self":"https://itsham-sajid.atlassian.net/rest/api/3/issue/10298"}
+        [2023-04-05 00:43:21,902] - INFO     jira_issue_creator - Total tickets created: 2
+        [2023-04-05 00:43:21,902] - INFO     ticket_feeder_logger --------------------------------------------------
 
 
