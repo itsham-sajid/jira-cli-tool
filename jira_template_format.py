@@ -1,30 +1,10 @@
 import json
+from main import log_exception
+import logging
 
+logger = logging.getLogger(__name__)
 
-def check_json_extension(json_data_file, values):
-
-    checks_passed = False
-
-    with open(json_data_file, "r") as f:
-        data = json.load(f)
-
-    if not json_data_file.endswith('.json'):
-        raise ValueError('Error: JSON file required')
-    else:
-        file_type = True
-        for key, value in data.items():
-            if not all(item in value for item in values):
-                print(f"Not all search values exist.\nPlease check JSON objects in '{json_data_file}' to make sure values {values} exist")
-                checks_passed = False
-                break
-        else:
-            print("All search values exist in the dictionary")
-            checks_passed = True
-
-    return checks_passed
-  
-
-
+@log_exception
 def read_json_data_file(json_data, jira_template, req_values, template_placeholders):
 
     with open(json_data, 'r') as f:
@@ -41,7 +21,7 @@ def read_json_data_file(json_data, jira_template, req_values, template_placehold
 
     return new_templates
 
-
+@log_exception
 def update_template_placeholders(template, placeholders, requested_values):
 
     if isinstance(template, dict):

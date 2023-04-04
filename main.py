@@ -14,6 +14,7 @@ from functools import wraps
 
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
+
 def create_logger() -> str:
     """Create Logger function to setups logger for this file."""
     # Logging variables
@@ -72,63 +73,50 @@ def create_tickets(
         placeholders: str = typer.Option(..., "--placeholders", "-p", help="Number of days to search back", prompt=True)
         ):
     
+    env_vars = ['JIRA_API_TOKEN', 'JIRA_USERNAME', 'JIRA_API_URL']
+
     values = [v.strip() for v in values.split(",")]
     placeholders = placeholders.split(",")
-    #ensure all the checks are completed 
 
-    jira_api_vars = check_env_vars_exist()
-
-    logger.info(f"Checking {jsondata} contains requested values: {values}")
-    check_jsonfile_values = check_json(jsondata, values)
-
-    logger.info(f"Checking {templatefile} contains specified placeholders: {placeholders}")
-    check_template_values = template_json(templatefile, placeholders)
-
-    #test jira connection
-
-    api_auth_headers = jira_issue_creator.jira_api(jira_api_vars['JIRA_USERNAME'], jira_api_vars['JIRA_API_TOKEN'])
     
+    if (check_env_vars(env_vars)) == True:
+
+        env_var_values = {var: os.environ.get(var) for var in env_vars}
+        auth_headers = jira_issue_creator.jira_api(env_var_values['JIRA_USERNAME'], env_var_values['JIRA_API_TOKEN'])
+        api_connect_test = jira_issue_creator.api_connection_test(env_var_values['JIRA_API_URL'], auth_headers)
 
 
+    if api_connect_test == True:
+
+        logger.info(f"- Checking {jsondata} contains requested values: {values}")
+        check_jsonfile_values = check_json(jsondata, values)
+
+        logger.info(f"- Checking {templatefile} contains specified placeholders: {placeholders}")
+        check_template_values = template_json(templatefile, placeholders)
 
 
-    # print(check_req_arguments)
-
-
-    # if get_env_variables == True:
-    #     api_connection = jira_connection(jira_username, jira_api_token)
+    if check_template_values and check_jsonfile_values == True:
         
-    #     jira_issue_creator.jira_api()
- 
-
-
-    # check_files = jira_template_format.check_json_extension(jsondata, values)
-
-
-    # if check_files == True:
-    #     print("YES")
-    #     jira_format_task = jira_template_format.read_json_data_file(jsondata, templatefile, values, placeholders)
-    #     jira_issue_creator.send_payload(jira_api_url, jira_api_auth, jira_format_task)
-    # else:
-    #     print("NO")
+        jira_format_task = jira_template_format.read_json_data_file(jsondata, templatefile, values, placeholders)
+        jira_issue_creator.send_payload(env_var_values['JIRA_API_URL'], auth_headers, jira_format_task)
+   
 
 
 @log_exception
-def check_env_vars_exist():
+def check_env_vars(env_vars):
 
-    env_vars = ['JIRA_API_TOKEN', 'JIRA_USERNAME', 'JIRA_API_URL']
+    env_passed = False
 
-    env_var_values = {}
-
-    for vars in env_vars:
-        if not os.environ.get(vars):
-            logger.error(f"{vars} environment variable is not set.")
-            return False
+    for var in env_vars:
+        if var not in os.environ:
+            logger.error(f"- {var} not found in environment variables")
+            logger.error(f"- Please check all required env variables exist")
+            env_passed = False
+            break
         else:
-            env_var_values[vars] = os.environ[vars]
-
-    logger.info(f"All environment variables {env_vars} found.")
-    return env_var_values
+            logger.info(f"- {var} found in environment variables.")
+            env_passed = True
+    return env_passed
 
 @log_exception
 def check_json(jsondata, values):
@@ -144,11 +132,11 @@ def check_json(jsondata, values):
         file_type = True
         for key, value in data.items():
             if not all(item in value for item in values):
-                logger.error(f"Not all search values exist.\nPlease check {values} exist in '{jsondata}'")
+                logger.error(f"- Not all search values exist.\nPlease check {values} exist in '{jsondata}'")
                 file_checks_passed = False
                 break
         else:
-            logger.info(f"All requested values {values} exist in '{jsondata}'")
+            logger.info(f"- All requested values {values} exist in '{jsondata}'")
             file_checks_passed = True
 
     return file_checks_passed
