@@ -8,10 +8,10 @@ The creation of tickets using the Jira API is straightforwad when creating a tic
 
 The ADF format is simply just a JSON structured document. There's a template within 'templates' folder of an example.
 
-How you use your template with the tool is, you simply just have to add "placeholders" of where you want your values to go and these will be updated.
+To update values in your Jira temaplte file, you simply just have to add "placeholders" of where you want your values to go and these will be updated.
 
 
-**The script allows us to do the following:** 
+**The script allows you to do the following:** 
 
 - **Search RSS Feeds:** Before creating a ticket you can search an RSS feed with specified search terms and see what results are returned and the values you can add to your ticket.
 - **Jira Template:** There's a default template within the 'templates' folder. See [Usage](##Usage) for more info on the using templates
@@ -25,10 +25,9 @@ How you use your template with the tool is, you simply just have to add "placeho
 - Python 3 - Tool tested using Python 3.11.2 
 
 
-
 ## Usage
 
-1. Jira API Creds
+### Jira API Creds
 
 To publish JIRA tickets first set environment variables below or add this to your local terminal profile e.g. (.bashrc, .zshrc file)
 
@@ -36,10 +35,11 @@ To publish JIRA tickets first set environment variables below or add this to you
         export JIRA_API_TOKEN=<token>
    
         export JIRA_USERNAME=<jira-username>
+        
+        export JIRA_API_URL=<jira-api-url>
 
 
-
-2. Virtual Env & Requirements
+### Virtual Env & Requirements
 
 Create and and activate Python virtual environment: 
 
@@ -53,20 +53,29 @@ Install the required packages:
     pip3 install -r requirements.txt
 
 
-3. Commmands
+## Commands
 
-The tool has two commands:
+The tool has two main commands **search-feed** and **create-ticket**
 
-**search-feed**
+#### search-feed - Command searches for given RSS feed with supplied keywords and outputs all matches entries to a JSON file.  
 
-Search an 
+**Required arguments:**
 
-Example usage:
+* --rssfeed  - The URL of the RSS feed
+* --keywords - Keywords to search for, keywords are matched against the RSS feed entry titles
+* --days     - How far back to check
+
+**Example usage:**
 
         python3 main.py search-feed \
         --rssfeed="https://aws.amazon.com/about-aws/whats-new/recent/feed/?&rss" \
         --keywords="Direct Connect" \
         --days=30
+
+**Output:**
+
+
+
 
 **create-tickets**
 
