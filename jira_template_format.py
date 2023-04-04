@@ -1,6 +1,10 @@
 import json
+from logs import logger, log_exception
 
+@log_exception
 def read_json_data_file(json_data, jira_template, req_values, template_placeholders):
+
+    logger.info(f"- Updating template '{jira_template}'. Replacing {template_placeholders} with {req_values} ")
 
     with open(json_data, 'r') as f:
         data = json.load(f)
@@ -16,6 +20,7 @@ def read_json_data_file(json_data, jira_template, req_values, template_placehold
 
     return new_templates
 
+@log_exception
 def update_template_placeholders(template, placeholders, requested_values):
 
     if isinstance(template, dict):
