@@ -6,9 +6,7 @@ import os
 import rss_feed_search
 import typer
 
-
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
-
 
 @log_exception
 @app.command(short_help="Command searches RSS feed with given search terms and outputs the results to a file")
@@ -17,6 +15,11 @@ def search_feed(
         keywords: str = typer.Option(..., "--keywords", "-k", help="List of search terms", prompt=True),
         days: int = typer.Option(..., "--days", "-d", help="Number of days to search back", prompt=True)
         ):
+    """ search-feed command:
+     
+    Command searches for given RSS feed and outputs all matches entries to a file.  
+
+    """
     
     keywords = keywords.split(",")
     
@@ -24,13 +27,18 @@ def search_feed(
 
 @log_exception
 @app.command(short_help=
-        'Command requires all positional arguements to search for rss feed, updates Jira template and creates ticket\n')
+        'Command requires all positional arguements to provide JSON data, update Jira template and create tickets\n')
 def create_tickets(
         jsondata: str = typer.Option(..., "--jsondata", "-j", help="JSON file", prompt=True),
         values: str = typer.Option(..., "--values", "-v", help="Values to use from JSON file", prompt=True),
         templatefile: str = typer.Option(..., "--templatefile", "-t", help="JIRA Template file", prompt=True),
         placeholders: str = typer.Option(..., "--placeholders", "-p", help="Number of days to search back", prompt=True)
         ):
+    """ create-commands command:
+     
+    Command checks env vars exist, tests creds, checks values provided, updates Jira template and creates the Jira tickets  
+
+    """
     
     logger.info("-" * 50)
     env_vars = ['JIRA_API_TOKEN', 'JIRA_USERNAME', 'JIRA_API_URL']
@@ -47,19 +55,21 @@ def create_tickets(
         api_connect_test = jira_issue_creator.api_connection_test(env_var_values['JIRA_API_URL'], auth_headers)
         logger.info("-" * 50)
 
-
-    if api_connect_test == True:
-
+    if api_connect_test:
         logger.info(f"- Checking '{jsondata}' contains requested values: {values}")
         check_jsonfile_values = check_json(jsondata, values)
 
-        logger.info(f"- Checking '{templatefile}' contains specified placeholders: {placeholders}")
-        check_template_values = template_json(templatefile, placeholders)
-        
+        if check_jsonfile_values:
+            logger.info(f"- Checking '{templatefile}' contains specified placeholders: {placeholders}")
+            check_template_values = template_checks(templatefile, placeholders)
+        else:
+            check_template_values = False
+    else:
+        check_jsonfile_values = False
+        check_template_values = False
 
+    if check_template_values and check_jsonfile_values:
 
-    if check_template_values and check_jsonfile_values == True:
-        
         jira_format_task = jira_template_format.read_json_data_file(jsondata, templatefile, values, placeholders)
         logger.info("-" * 50)
         jira_issue_creator.send_payload(env_var_values['JIRA_API_URL'], auth_headers, jira_format_task)
@@ -67,6 +77,7 @@ def create_tickets(
 
 @log_exception
 def check_env_vars(env_vars):
+    """ Function checks required env vars exist. """
 
     env_passed = False
 
@@ -77,12 +88,13 @@ def check_env_vars(env_vars):
             env_passed = False
             break
         else:
-            logger.info(f"- {var} found in environment variables.")
+            logger.info(f"- {var} Found in environment variables.")
             env_passed = True
     return env_passed
 
 @log_exception
 def check_json(jsondata, values):
+    """ Function performs checks against provide JSON files and if values exist within the file. """
 
     file_checks_passed = False
 
@@ -105,7 +117,9 @@ def check_json(jsondata, values):
     return file_checks_passed
 
 @log_exception
-def template_json(template_file, search_placeholders):
+def template_checks(template_file, search_placeholders):
+    """ Function performs checks against Jira template file and checks placeholders values exist within the file. """
+
     file_checks_passed = False
 
     with open(template_file, "r") as f:
@@ -117,11 +131,11 @@ def template_json(template_file, search_placeholders):
         file_type = True
         for key, value in data.items():
             if any(search_term in str(value) for search_term in search_placeholders):
-                logger.info(f"Found placeholders: {search_placeholders} in JSON file '{template_file}'")
+                logger.info(f"- Found placeholders: {search_placeholders} in JSON file '{template_file}'")
                 file_checks_passed = True
                 break
         else:
-            logger.error(f"Not all placeholder values exist. Please check {search_placeholders} exist in '{template_file}'")
+            logger.error(f"- Not all placeholder values exist. Please check {search_placeholders} exist in '{template_file}'")
             file_checks_passed = False
 
     return file_checks_passed
@@ -130,11 +144,12 @@ def template_json(template_file, search_placeholders):
 @app.callback()
 def main():
     """
-    Feed2Ticket
-    Purpose: This program allows you to create Jira tickets based on matching entries from an RSS feed.
+    TicketFeeder
+    Purpose: This program allows you to search for entries in a RSS Feed, the matching entries are saved to a JSON file.
+    The saved JSON file can be used to create Jira tickets with the 'create-tickets' command.
+
+    For full usage instructions please check README.md
     """
-
-
 
 if __name__ == "__main__":
     app()

@@ -4,6 +4,8 @@ from logs import logger, log_exception
 @log_exception
 def read_json_data_file(json_data, jira_template, req_values, template_placeholders):
 
+    logger.info(f"- Updating template '{jira_template}'. Replacing {template_placeholders} with {req_values} ")
+
     with open(json_data, 'r') as f:
         data = json.load(f)
 
@@ -11,17 +13,12 @@ def read_json_data_file(json_data, jira_template, req_values, template_placehold
 
     for key, value in data.items():
         extracted_values = [value[field] for field in req_values]
-        try:
-                with open(jira_template, 'r') as f:
-                    logger.info(f"- Updating template '{jira_template}'. Replacing {template_placeholders} with {req_values} ")
-                    template = json.load(f)
-                    new_template = update_template_placeholders(template,  template_placeholders, extracted_values)
-                    new_templates.append(new_template)
-        except Exception as e:
-            logger.error(f"- Error updating template: {str(e)}")
-            new_templates.append(None)
+        with open(jira_template, 'r') as f:
+            template = json.load(f)
+            new_template = update_template_placeholders(template,  template_placeholders, extracted_values)
+            new_templates.append(new_template)
 
-        return new_templates
+    return new_templates
 
 @log_exception
 def update_template_placeholders(template, placeholders, requested_values):
