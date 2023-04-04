@@ -1,4 +1,4 @@
-# Feed to Ticket
+# Jira Ticket Feeder
 
 ## Purpose
 
