@@ -1,4 +1,4 @@
-# Jira Ticket Feeder
+# Jira Ticket Feeder :ticket:
 
 ## Purpose
 
@@ -70,10 +70,10 @@ The command searches for given RSS feed with supplied keywords and outputs all m
 
         python3 main.py search-feed \
         --rssfeed="https://aws.amazon.com/about-aws/whats-new/recent/feed/?&rss" \
-        --keywords="Direct Connect" \ #multiple keyowrds can be declared with spaces e.g. --keywords=AWS,EKS
-        --days=30
+        --keywords=CodeBuild \ #multiple keyowrds can be declared with spaces e.g. --keywords=AWS,EKS
+        --days=15
 
-**Output: Saved to a file named '2-CodeBuild-entries.json'
+**Output: Saved to a file named '2-CodeBuild-entries.json'**
 
         {
             "Entry 1": {
@@ -94,7 +94,7 @@ The command searches for given RSS feed with supplied keywords and outputs all m
 
 #### create-tickets
 
-How this commands works is it will first take your JSDON data file, you declare all the values you want to obtain your JSON file for your Jira ticket, provide your Jira template file which has 'placeholders' to where you want your values to be placed.
+How this commands works is it will first take your JSON data file, you declare all the values you want to obtain your JSON file for your Jira ticket, provide your Jira template file which has 'placeholders' to where you want your values to be placed.
 
 The command will format the Jira ADF template replacing all values and a seperate Jira ticket is raised for each entry in your JSON file. So, for the '2-CodeBuild-entries.json' file 2 tickets will be created.
 
@@ -117,13 +117,14 @@ The reason for using the Jira ADF template is because it's the only format their
 
 **Output:**
 
-From the above example, below is the expected result. 
-**Two tickets are created within Jira:**
-![image](https://user-images.githubusercontent.com/99727892/229946288-0eb1e161-1992-4316-832d-37c11c85005e.png)
+From the above example, below is the expected result. Two tickets are created within Jira:
 
+<img src="https://user-images.githubusercontent.com/99727892/229946288-0eb1e161-1992-4316-832d-37c11c85005e.png" alt="image" style="max-width: 500px;">
 
 **Task Details:**
-![image](https://user-images.githubusercontent.com/99727892/229946579-3581eaac-18a3-43d7-ab5a-4d85d3b48c4f.png)
+
+<img src="https://user-images.githubusercontent.com/99727892/229946579-3581eaac-18a3-43d7-ab5a-4d85d3b48c4f.png" alt="image" style="max-width: 500px;">
+
                                                                                                                                         
 ## Logging
 
